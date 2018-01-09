@@ -15,3 +15,8 @@ cmake_install.cmake
 
 # ignore the build directory
 build/
+
+# ignore python build and distribution artifacts
+*.pyc
+*.egg
+*.egg-info

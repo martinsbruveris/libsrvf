@@ -80,7 +80,7 @@ public:
 
   /**
    * Inserts the given element into the tree if and only if it is at least 
-   * \a min_dist away from all element in the tree.
+   * \a min_dist away from all elements in the tree.
    *
    * \return \c true if a new element was inserted, or \c false otherwise
    */
