@@ -38,7 +38,8 @@ function f = plf_evaluate( F, T, t )
 
   f = zeros(size(F,1),length(t));
   for i=1:size(F,1)
-    f(i,:) = interp1(T,F(i,:),t,'extrap');
+    [Tunique, ind] = unique(T);
+    f(i,:) = interp1(Tunique,F(i,ind),t,'linear','extrap');
   end
 
   % left-continuous at jump discontinuities
