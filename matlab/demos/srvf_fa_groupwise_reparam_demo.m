@@ -1,5 +1,5 @@
-load demos/ages.mat;
-load demos/boys_rates.mat;
+load -ASCII ages.mat;
+load -ASCII boys_rates.mat;
 
 nfuncs = size(boys_rates, 1);
 

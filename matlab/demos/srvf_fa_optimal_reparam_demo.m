@@ -1,5 +1,5 @@
-load demos/ages.mat;
-load demos/boys_rates.mat;
+load -ASCII ages.mat;
+load -ASCII boys_rates.mat;
 
 T1 = ages;
 T2 = ages;
