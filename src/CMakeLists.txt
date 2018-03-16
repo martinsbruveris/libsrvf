@@ -1,6 +1,6 @@
 include_directories(${LIBSRVF_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(srvf SHARED c_api.cc dpnbhd.cc fileio.cc functions.cc interp.cc matchselect.cc matrix.cc opencurves.cc partialmatch.cc plf.cc qmap.cc reparam.cc rotate.cc rotselect.cc srvf.cc util.cc)
+add_library(srvf STATIC c_api.cc dpnbhd.cc fileio.cc functions.cc interp.cc matchselect.cc matrix.cc opencurves.cc partialmatch.cc plf.cc qmap.cc reparam.cc rotate.cc rotselect.cc srvf.cc util.cc)
 
 if(GSL)
   target_link_libraries(srvf gsl gslcblas)

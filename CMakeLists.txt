@@ -8,6 +8,8 @@ project(LIBSRVF)
 
 find_library(GSL gsl)
 
+set(CMAKE_CXX_FLAGS "-fPIC")
+
 add_subdirectory(src)
 add_subdirectory(tests EXCLUDE_FROM_ALL)
 
