@@ -63,8 +63,8 @@ function plot_registration( F1, T1, F2, T2, fmt1, fmt2 )
     plot3( F2(1,:), F2(2,:), F2(3,:), fmt2 );
 
     for i=1:3:nsamps
-      plot3( [F1r(1,i) F2r(1,i)], \
-             [F1r(2,i) F2r(2,i)], \
+      plot3( [F1r(1,i) F2r(1,i)], ...
+             [F1r(2,i) F2r(2,i)], ...
              [F1r(3,i) F2r(3,i)], 'k' );
     end
   else
