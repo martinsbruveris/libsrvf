@@ -33,7 +33,7 @@
 function q = srvf_evaluate( Q, T, t )
   assert( size(T,1) == 1 );
   assert( size(Q,2) == size(T,2)-1 );
-  assert( min(diff(T)) >= 0);
+  assert( min(diff(T)) > 0);
   assert( min(diff(t)) >= 0 );
   epsval = 0.01*(T(end)-T(1));
   assert( t(1) > T(1)-epsval && t(end) < T(end)+epsval );
