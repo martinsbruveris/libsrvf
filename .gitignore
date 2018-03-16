@@ -9,6 +9,7 @@ cmake_install.cmake
 *.la
 *.lo
 *.mex
+*.mexa64
 
 # ignore Vim swap files
 *.swp
