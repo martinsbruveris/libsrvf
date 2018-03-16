@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(inplace_div_test2)
   srvf::Matrix B(10,10,2.0);
   B(5,5)=0.0;
   A /= B;
-  BOOST_CHECK(isinf(A(5,5)));
+  BOOST_CHECK(std::isinf(A(5,5)));
   for (size_t i=0; i<10; ++i)
   {
     for (size_t j=0; j<10; ++j)
