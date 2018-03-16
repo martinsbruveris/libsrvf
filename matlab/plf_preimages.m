@@ -24,17 +24,15 @@
 % piecewise-linear function F,T.  The function must be a 1-D function, 
 % and xv must be non-decreasing.
 %
-% If F is not a one-to-one function (i.e. F(i)==F(i+1) for some i), 
-% then there may be more than one preimage for a given value xv(j).
-% In this case, there is at the moment no convention determining 
-% which preimage is returned for such a value.  The only guarantee 
-% is that if you do this
+% If F is not a one-to-one function (i.e. F(j)==F(j+1) for some j), then
+% there may be more than one preimage for a given value xv(i). In this case
+% the xvi(i) is the midpoint of the first interval [T(j),T(j+1)], where
+% F(j)==F(j+1). This should guarantee that if you do this
 %
 % xvi=plf_preimages(F,T,xv);
 % Fxvi=plf_evaluate(F,T,xvi);
 %
 % then Fxvi will be equal (or at least close) to xv.
-% TODO: is there a sensible convention for choosing preimages?
 %
 % Inputs
 %  F,T:  the function.  F and T must be non-decreasing.
@@ -44,26 +42,54 @@
 %  xvi:  preimages of xv
 % --------------------------------------------------------------------------
 function xvi = plf_preimages( F, T, xv )
-  assert( size(F,1) == 1 );
-  assert( min(diff(F)) >= 0 );
-  assert( min(diff(T)) >= 0 );
+    assert( size(F,1) == 1 );
+    assert( min(diff(F)) >= 0 );
+    assert( min(diff(T)) >= 0 );
+    
+    epsilon = 1e-12;
 
-  xvi = zeros(1,length(xv));
-  Fidx = 1;
-  for xvidx = 1:length(xv)
-    while( Fidx < length(F)-1 && xv(xvidx) > F(Fidx+1) )
-      Fidx = Fidx+1;
-    end
+    xvi = zeros(1,length(xv));
+    j = 1;
+    for i = 1:length(xv)
+        % The value is at the beginning of T
+        if j == 1 && xv(i) < F(j) - epsilon
+            xvi(i) = -Inf;
+            continue
+        elseif j == 1 && xv(i) <= F(j) 
+            % The value is borderline at the start
+            xvi(i) = T(j);
+            continue
+        end
 
-    dF = F(Fidx+1) - F(Fidx);
-    if ( dF > 1e-4 )
-      w1 = (F(Fidx+1) - xv(xvidx)) / dF;
-      w2 = (xv(xvidx) - F(Fidx)) / dF;
-      xvi(xvidx) = w1 * T(Fidx) + w2 * T(Fidx+1);
-    else
-      xvi(xvidx) = T(Fidx);
+        % Finds smallest j such that F(j) <= xv(i) <= F(j+1)
+        % Note: the condition xv(i) > F(j) is to catch the case when F is
+        % constant on the interval [j, j+1]. In this case we want to stop
+        % at the first such interval,
+        while( j < length(F) && xv(i) > F(j) && xv(i) >= F(j+1) )
+            j = j+1;
+        end
+        
+        % The value lies above the image of F
+        if j == length(F) && xv(i) > F(j) + epsilon
+            xvi(i) = Inf;
+            continue
+        elseif j == length(F) % The value is borderline at the end
+            xvi(i) = T(j);
+            continue;
+        end
+        
+        % F is constant on the interval [j, j+1]; return midpoint
+        if F(j+1) - F(j) < epsilon
+            xvi(i) = (T(j+1) + T(j)) / 2;
+            continue
+        end
+        
+        % The middle cases; F strictly increasing on [j, j+1]
+        dF = F(j+1) - F(j);
+        w1 = (F(j+1) - xv(i)) / dF;
+        w2 = (xv(i) - F(j)) / dF;
+        xvi(i) = w1 * T(j) + w2 * T(j+1);
     end
-  end
 end
 
 
