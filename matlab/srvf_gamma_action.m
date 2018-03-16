@@ -25,7 +25,7 @@
 % Inputs:
 %  Q  - SRVF function values
 %  TQ - SRVF parameter values
-%  G  - diffeomorphism function values.  Must be increasing, and must 
+%  G  - diffeomorphism function values.  Must be nondecreasing, and must 
 %       satisfy TQ(1)<=G(1) and TQ(end)>=G(end).
 %  TG - diffeomorphism parameter values.
 %
@@ -33,15 +33,21 @@
 %  Qr - the new SRVF function values
 %  Tr - the new SRVF parameter values
 % --------------------------------------------------------------------------
-function [Qr Tr] = srvf_gamma_action(Q,TQ,G,TG)
-  TGx = plf_preimages(G,TG,TQ);
-  Tr = unique([TG TGx]);
-  Gr = unique([TQ G]);
-  DGr = (Gr(2:end)-Gr(1:(end-1))) ./ (Tr(2:end)-Tr(1:(end-1)));
-  Qr = srvf_refine(Q,TQ,Gr);
-  Qr = Qr .* repmat(sqrt(DGr),size(Qr,1),1);
+function [Qr, Tr] = srvf_gamma_action(Q, TQ, G, TG)
+    % Construct finer subdivision where Q*G will be piecewise constant
+    TGx = plf_preimages(G,TG,TQ);
+    Tr = unique([TG TGx]);
+    
+    % Evaluate Q on G(Tr)
+    Trmid = (Tr(1:end-1) + Tr(2:end)) / 2;
+    Grmid = plf_evaluate(G, TG, Trmid);
+    Qr = srvf_evaluate(Q, TQ, Grmid);
+    
+    % Multiply by sqrt(G')
+    Gr = plf_evaluate(G, TG, Tr);
+    DGr = (Gr(2:end)-Gr(1:(end-1))) ./ (Tr(2:end)-Tr(1:(end-1)));
+    Qr = Qr .* repmat(sqrt(DGr), size(Qr,1), 1);
 end
-
 
 %!test
 %! Q=[1];
