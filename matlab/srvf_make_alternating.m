@@ -4,7 +4,7 @@ function [Qn, Tn] = srvf_make_alternating(Q, T)
   Tn = [T(1)];
 
   for i=2:size(Q, 2)
-    if sign(Q(i)) != sign(Qn(end))
+    if sign(Q(i)) ~= sign(Qn(end))
       Qn = [Qn Q(i)];
       Tn = [Tn T(i)];
     end
