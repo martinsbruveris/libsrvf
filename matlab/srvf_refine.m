@@ -34,19 +34,12 @@
 %  Qr : the SRVF values corresponding to the new changepoint vector
 % --------------------------------------------------------------------------
 function Qr = srvf_refine( Q, T, Tr )
-  %Qr = [];
+    assert( all(ismember(T, Tr)) ); % Note, this check might be slow.
+    assert( min(diff(T)) > 0 );
+    assert( min(diff(Tr)) > 0 );
 
-  %idx1 = 1;
-
-  %for idx2 = 1:(length(Tr)-1)
-  %  while ( Tr(idx2+1) > T(idx1+1) + 1e-6 )
-  %    idx1 = idx1 + 1;
-  %  end
-  %  Qr = [Qr Q(:,idx1)];
-  %end
-
-  tv = (Tr(1:end-1)+Tr(2:end))/2;
-  Qr = srvf_evaluate(Q,T,tv);
+    tv = (Tr(1:end-1)+Tr(2:end))/2;
+    Qr = srvf_evaluate(Q,T,tv);
 end
 
 
