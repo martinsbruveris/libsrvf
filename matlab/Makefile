@@ -17,7 +17,7 @@ MEXFILES= \
 	srvf_fa_karcher_mean.mex \
 	srvf_fa_optimal_reparam.mex \
 	srvf_karcher_mean.mex \
-	srvf_optimal_reparam.mex \
+	srvf_optimal_reparam_mex.mex \
 	srvf_pmatch_find_matches.mex
 
 %.$(MEXSUFFIX): %.o
