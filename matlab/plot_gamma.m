@@ -1,4 +1,4 @@
-function plotGamma(ga1, x1, ga2, x2, fmt)
+function plot_gamma(ga1, x1, ga2, x2, fmt)
 
 if nargin < 5
     fmt = '-ro';

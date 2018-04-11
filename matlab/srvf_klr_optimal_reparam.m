@@ -77,6 +77,11 @@ pair2list = @(a, b) m*(b-1) + a; % Mapping between (i,j) and vertexList
 distOpt = -Inf * ones(m, n);
 distOpt(1, 1) = 0;
 
+% Sometimes we can reach a given vertex in two different ways. Each path
+% has its associated slope constraints but we don't know which constraint
+% to enforce. In this case we need to ignore them.
+ignoreSlopeConstraint = zeros(m, n);
+
 % Keeping track where the last P-segment of the optimal path ending at
 % vertex (i,j) ended and what the final slope of this vertex is. This is
 % used for the slope constraints between two consecutive P-segments.
@@ -111,7 +116,8 @@ for k = 1:numVertices
         end
         
         % Find slope constraints on new P-segment from this vertex
-        if prevPSegEnd(k) == 0 || prevPSegEnd(k) == 1
+        if prevPSegEnd(k) == 0 || prevPSegEnd(k) == 1 || ...
+                ignoreSlopeConstraint(i, j)
             % We don't know where or how the previous P-segment ended.
             % Hence, no constraints on slope.
             almin = al_eps;
@@ -136,14 +142,14 @@ for k = 1:numVertices
             end
             
             % In this case there are no optimal P-segments from here
-            if C > 0 && D > 0 && C*D >= A*B + 1e-12
+            if C > 0 && D > 0 && C*D >= A*B + 1e-14
                continue
             end
             
             % Use constraints on the change of slope from the paper
             al_eps2 = sqrt(al_eps);
             if C > w_eps && D > w_eps
-                if C*D - A*B < 1e-12
+                if C*D - A*B < 1e-14
                     % If C*D = A*B, then the interval collapses to a point.
                     % We need to numerically stabilize this operation.
                     % We use al_eps2 here to make the interval large
@@ -176,7 +182,7 @@ for k = 1:numVertices
         
         % In case using the constraints from the paper leads to problems
         if ignore_slope_constraints
-            al = almin;
+            al = al_eps;
             almax = pi/2;
         end
             
@@ -211,14 +217,20 @@ for k = 1:numVertices
             %       num2str(ESeg), ' ', num2str(alNext), ' ', num2str(al)]);
             % end
             
+            % If we find a "close call" we better ignore slope constraints
+            % for vertex (in, jn).
+            if distOpt(i, j) + ESeg > distOpt(in, jn) - w_eps
+                ignoreSlopeConstraint(in, jn) = 1;
+            end
+            
             % We have found a new maximum
             if distOpt(i, j) + ESeg > distOpt(in, jn)
                 distOpt(in, jn) = distOpt(i, j) + ESeg;
                 prevPSegEnd(kn) = kn;
                 
-                dy = gammaNext(2,end) - gammaNext(2,end-1);
                 dx = gammaNext(1,end) - gammaNext(1,end-1);
-                prevPSegEndSlope(:, kn) = [dy; dx];
+                dy = gammaNext(2,end) - gammaNext(2,end-1);
+                prevPSegEndSlope(:, kn) = [dx; dy];
                 
                 prevVertex(kn) = k;
                 prevSlope(kn) = alNext;
@@ -253,6 +265,7 @@ for k = 1:numVertices
                 distOpt(i1, j1) = distOpt(i, j);
                 prevPSegEnd(k1) = k;
                 prevPSegEndSlope(:, k1) = prevPSegEndSlope(:,k);
+                ignoreSlopeConstraint(i1, j1) = ignoreSlopeConstraint(i, j);
                 
                 prevVertex(k1) = k;
                 prevSlope(k1) = Inf;
